@@ -12,6 +12,7 @@ cap = cv2.VideoCapture(0)
 
 #face detection
 face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_alt.xml")
+eyes_cascade = cv2.CascadeClassifier("frontalEyes35x16.xml")
 
 skip = 0
 face_data = []
@@ -36,7 +37,16 @@ while True:
 		x, w, y, h = face
 		cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
-		#Extrat region of interest
+		#eyes detection
+		roi_gray = gray[y:y+h, x:x+w]
+		roi_color = frame[y:y+h, x:x+w]
+		
+		eyes = eyes_cascade.detectMultiScale(roi_gray)
+			
+		for (ex,ey,ew,eh) in eyes:
+			cv2.rectangle(roi_color,(ex,ey),(ex+eh,ey+ew),(0,255,0),2)
+
+		# Extrat region of interest
 		offset = 10
 		face_section = frame[y-offset: y+h+offset, x-offset:x+w+offset]
 		face_section = cv2.resize(face_section, (100, 100))
